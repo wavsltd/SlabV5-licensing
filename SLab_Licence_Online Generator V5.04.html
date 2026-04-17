@@ -143,40 +143,46 @@
     .btn, .btn-secondary { width:100%; min-width:0; }
   }
 
-  .gate-wrap {
+
+  .gate-overlay {
     position:fixed; inset:0; z-index:9999;
+    background:rgba(13,13,15,0.96);
     display:flex; align-items:center; justify-content:center;
-    padding:20px; background:var(--bg);
+    padding:20px;
   }
+  .gate-overlay.hidden { display:none; }
   .gate-card {
     background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:32px; max-width:520px; width:100%;
+    border-radius:12px; padding:32px; max-width:440px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
   }
   .gate-title {
+    font-size:1.1em; font-weight:800; color:#fff;
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;
     display:flex; align-items:center; gap:4px;
-    font-size:1.4em; font-weight:800; color:#fff;
-    letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;
   }
   .gate-subtitle {
     font-size:0.78em; color:var(--muted);
-    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:28px;
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:20px;
   }
   .gate-status {
-    min-height:20px; font-size:0.8em; margin-bottom:12px; color:var(--danger);
+    min-height:18px; margin-top:10px; font-size:0.8em; color:var(--danger);
   }
 
 </style>
 </head>
 <body>
 
-<div id="cookieGate" class="gate-wrap">
+<div id="gateOverlay" class="gate-overlay hidden">
   <div class="gate-card">
     <div class="gate-title"><span class="title-s">S</span><span>Lab Tools</span></div>
-    <div class="gate-subtitle">Password Protected</div>
+    <div class="gate-subtitle">Password Required</div>
     <label for="gatePassword">Password</label>
-    <input id="gatePassword" type="password" autocomplete="current-password" placeholder="Enter password">
+    <input type="password" id="gatePassword" autocomplete="current-password" placeholder="Enter password">
     <div id="gateStatus" class="gate-status"></div>
-    <button type="button" class="btn btn-primary" onclick="unlockWithCookie()">Access Generator</button>
+    <div class="actions" style="margin-bottom:0; margin-top:14px;">
+      <button class="btn btn-primary" type="button" id="gateButton">Access</button>
+    </div>
   </div>
 </div>
 
@@ -269,72 +275,6 @@
 
 </div>
 
-
-<script>
-const COOKIE_NAME = 'slab_tools_auth';
-const COOKIE_MAX_AGE = 180;
-const PASSWORD_HASH = '8a438d4f7ec9047667f7ea1104f8a69557f0a7ee7d0b2d6fbfe031dfc6afc73d';
-
-function setCookie(name, value, maxAgeSeconds) {
-  document.cookie = `${name}=${encodeURIComponent(value)}; max-age=${maxAgeSeconds}; path=/; SameSite=Lax`;
-}
-function getCookie(name) {
-  const parts = document.cookie ? document.cookie.split('; ') : [];
-  for (const part of parts) {
-    const eq = part.indexOf('=');
-    const key = eq >= 0 ? part.slice(0, eq) : part;
-    if (key === name) return decodeURIComponent(part.slice(eq + 1));
-  }
-  return null;
-}
-async function sha256hex(str) {
-  const buf = new TextEncoder().encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-function hideGate() {
-  const gate = document.getElementById('cookieGate');
-  if (gate) gate.style.display = 'none';
-}
-function showGate() {
-  const gate = document.getElementById('cookieGate');
-  if (gate) gate.style.display = 'flex';
-}
-async function unlockWithCookie() {
-  const input = document.getElementById('gatePassword');
-  const status = document.getElementById('gateStatus');
-  const pw = (input?.value || '').trim();
-  if (!pw) {
-    status.textContent = 'Enter the password.';
-    return;
-  }
-  const hash = await sha256hex(pw);
-  if (hash.toLowerCase() === PASSWORD_HASH.toLowerCase()) {
-    setCookie(COOKIE_NAME, '1', COOKIE_MAX_AGE);
-    status.textContent = '';
-    hideGate();
-  } else {
-    status.textContent = 'Incorrect password.';
-  }
-}
-function checkCookieGate() {
-  if (getCookie(COOKIE_NAME) === '1') hideGate();
-  else showGate();
-}
-document.addEventListener('DOMContentLoaded', () => {
-  checkCookieGate();
-  const input = document.getElementById('gatePassword');
-  if (input) {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        unlockWithCookie();
-      }
-    });
-  }
-});
-</script>
-
 <script>
 // ─── Constants ───────────────────────────────────────────────────────────────
 const ENC_KEY      = 'J1ffyL1t3!';
@@ -344,11 +284,76 @@ const ZIP_FILE     = 'QlabSLenc.zip';
 const ICON_FILE    = 'SlabV5Licence.icns';
 const FIRST_RUN_PT = 'True';
 
+const GATE_COOKIE_NAME = 'slab_tools_auth';
+const GATE_COOKIE_VALUE = '1';
+const GATE_COOKIE_MAX_AGE = 180;
+const GATE_PASSWORD = 'J1ffyL1t3!';
+
+function getCookie(name) {
+  const prefix = name + '=';
+  const parts = document.cookie ? document.cookie.split('; ') : [];
+  for (const part of parts) {
+    if (part.indexOf(prefix) === 0) return decodeURIComponent(part.substring(prefix.length));
+  }
+  return null;
+}
+
+function setGateCookie() {
+  document.cookie = `${GATE_COOKIE_NAME}=${encodeURIComponent(GATE_COOKIE_VALUE)}; max-age=${GATE_COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
+}
+
+function hasGateCookie() {
+  return getCookie(GATE_COOKIE_NAME) === GATE_COOKIE_VALUE;
+}
+
+function showGate() {
+  const overlay = document.getElementById('gateOverlay');
+  if (overlay) overlay.classList.remove('hidden');
+  const input = document.getElementById('gatePassword');
+  if (input) setTimeout(() => input.focus(), 0);
+}
+
+function hideGate() {
+  const overlay = document.getElementById('gateOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function initCookieGate() {
+  const button = document.getElementById('gateButton');
+  const input = document.getElementById('gatePassword');
+  const status = document.getElementById('gateStatus');
+
+  async function submitGate() {
+    if (!input || !status) return;
+    if (input.value === GATE_PASSWORD) {
+      setGateCookie();
+      status.textContent = '';
+      input.value = '';
+      hideGate();
+      return;
+    }
+    status.textContent = 'Incorrect password.';
+    input.select();
+  }
+
+  if (button) button.addEventListener('click', submitGate);
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitGate();
+    });
+  }
+
+  if (hasGateCookie()) hideGate();
+  else showGate();
+}
+
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('machineID').addEventListener('input', onMachineIDChange);
   document.getElementById('licenceType').addEventListener('change', onLicenceTypeChange);
   onLicenceTypeChange();
+  initCookieGate();
 });
 
 // ─── Licence type toggle ──────────────────────────────────────────────────────
@@ -693,7 +698,7 @@ function syntaxHighlight(xml) {
 
 function showError(message) {
   const b = document.getElementById('errorBanner');
-  b.textContent = '⚠ ' + msg;
+  b.textContent = '⚠ ' + message;
   b.classList.remove('hidden');
 }
 </script>
