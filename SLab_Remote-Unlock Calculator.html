@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLab Remote — Unlock Calculator</title>
+<style>
+  :root {
+    --bg:#0d0d0f; --surface:#141416; --surface2:#1c1c1f;
+    --border:#2a2a2e; --accent:#7100f4; --text:#d8d8d8;
+    --muted:#666; --ok:#50c878; --danger:#e05050;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:32px; max-width:480px; width:100%;
+  }
+  .title {
+    font-size:1.4em; font-weight:800; color:#fff;
+    letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;
+    display:flex; align-items:center; gap:4px;
+  }
+  .title-s {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; background:var(--accent); color:#fff;
+    border-radius:6px; line-height:1; flex:0 0 auto;
+  }
+  .title-rest { display:inline-block; }
+  .subtitle {
+    font-size:0.78em; color:var(--muted);
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:28px;
+  }
+  label {
+    display:block; font-size:0.72em; color:var(--muted);
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;
+  }
+  input {
+    width:100%; padding:12px 14px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:#fff; border-radius:8px;
+    font-family:'Menlo','Courier New',monospace;
+    font-size:1.1em; letter-spacing:0.15em; text-transform:uppercase;
+    transition:border-color 0.15s; margin-bottom:20px;
+    text-align:center;
+  }
+  input:focus { outline:none; border-color:var(--accent); }
+  .result-box {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; padding:16px; text-align:center;
+    margin-bottom:20px; min-height:58px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .result-code {
+    font-family:'Menlo','Courier New',monospace;
+    font-size:1.4em; font-weight:700; letter-spacing:0.2em; color:#fff;
+    user-select:all;
+  }
+  .result-hint {
+    font-size:0.78em; color:var(--muted);
+  }
+  button {
+    width:100%; padding:13px;
+    background:var(--accent); color:#fff;
+    border:none; border-radius:8px;
+    font-size:0.88em; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase;
+    cursor:pointer; transition:background 0.15s; margin-bottom:10px;
+  }
+  button:hover { background:#9030ff; }
+  .copy-btn {
+    background:var(--surface2); border:1px solid var(--border); color:var(--text);
+  }
+  .copy-btn:hover { background:var(--border); }
+  .note {
+    font-size:0.72em; color:var(--muted); line-height:1.5; margin-top:20px;
+    padding-top:16px; border-top:1px solid var(--border);
+  }
+  .ok  { color:var(--ok); }
+  .err { color:var(--danger); }
+  #status {
+    min-height:18px; font-size:0.8em; text-align:center;
+    margin-top:-12px; margin-bottom:12px;
+  }
+  code {
+    font-family:'Menlo','Courier New',monospace;
+    color:#fff;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="title"><span class="title-s">S</span><span class="title-rest">Lab Remote</span></div>
+  <div class="subtitle">Unlock Calculator</div>
+
+  <label for="nonce">Licence Serial (from device)</label>
+  <input id="nonce"
+         type="text"
+         placeholder="A3F2C19D7B"
+         maxlength="10"
+         autocomplete="off"
+         spellcheck="false"
+         oninput="this.value=this.value.toUpperCase().replace(/[^0-9A-F]/g,'');onInput()">
+
+  <label for="challenge" style="margin-top:-10px">Challenge Code (from device)</label>
+  <input id="challenge"
+         type="text"
+         placeholder="XXXX-XXXX-XXXX-XXXX"
+         maxlength="19"
+         autocomplete="off"
+         spellcheck="false"
+         oninput="onInput()">
+
+  <div id="status"></div>
+
+  <label>Response Code (enter this into device)</label>
+  <div class="result-box" id="result-box">
+    <span class="result-hint" id="result-hint">Enter the challenge code above</span>
+    <span class="result-code" id="result-code" style="display:none"></span>
+  </div>
+
+  <button type="button" onclick="calculate()">Calculate Response</button>
+  <button type="button" class="copy-btn" id="copy-btn" onclick="copyResult()" style="display:none">
+    Copy Response Code
+  </button>
+
+  <div class="note">
+    <strong style="color:var(--text)">How to use:</strong><br>
+    1. Open the SLab Remote web UI at <code>http://slab-remote.local/lock</code><br>
+    2. Copy the <strong style="color:var(--text)">Challenge Code</strong> and <strong style="color:var(--text)">Licence Serial</strong><br>
+    3. Paste both above and click Calculate<br>
+    4. Copy the Response Code and enter it in the device web UI<br>
+    <br>
+    <strong style="color:var(--text)">Licence Serial</strong> — log this alongside the challenge date for your records.
+    A reflashed device gets a new serial, requiring a new licence.<br>
+    <br>
+    This file works completely offline — keep it saved to your Mac.
+  </div>
+</div>
+
+<script>
+const SECRET = "SLabD3v1c3!";
+
+async function sha256hex(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, "0").toUpperCase())
+    .join("");
+}
+
+function formatCode(hex) {
+  const h = hex.substring(0, 16).toUpperCase();
+  return h.substring(0, 4) + "-" + h.substring(4, 8) + "-" +
+         h.substring(8, 12) + "-" + h.substring(12, 16);
+}
+
+function normalise(s) {
+  return s.replace(/-/g, "").replace(/\s/g, "").toUpperCase();
+}
+
+function isValidChallenge(s) {
+  return /^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/i.test(s.trim());
+}
+
+function setResult(code) {
+  const hint = document.getElementById("result-hint");
+  const res = document.getElementById("result-code");
+  const btn = document.getElementById("copy-btn");
+
+  if (code) {
+    hint.style.display = "none";
+    res.style.display = "inline";
+    res.textContent = code;
+    btn.style.display = "block";
+  } else {
+    hint.style.display = "inline";
+    hint.textContent = "Enter the challenge code above";
+    res.style.display = "none";
+    res.textContent = "";
+    btn.style.display = "none";
+  }
+}
+
+function onInput() {
+  const challengeInput = document.getElementById("challenge");
+  const nonceInput = document.getElementById("nonce");
+  const st = document.getElementById("status");
+
+  let digits = challengeInput.value.replace(/[^0-9A-Fa-f]/g, "").toUpperCase();
+  let formatted = "";
+  for (let i = 0; i < digits.length && i < 16; i++) {
+    if (i > 0 && i % 4 === 0) formatted += "-";
+    formatted += digits[i];
+  }
+  challengeInput.value = formatted;
+
+  nonceInput.value = nonceInput.value.toUpperCase().replace(/[^0-9A-F]/g, "");
+
+  if (formatted.length === 0 && nonceInput.value.length === 0) {
+    st.textContent = "";
+    setResult(null);
+    return;
+  }
+
+  if (formatted.length > 0 && !isValidChallenge(formatted)) {
+    st.innerHTML = "<span class='err'>Incomplete challenge code</span>";
+    setResult(null);
+    return;
+  }
+
+  if (formatted.length > 0 && nonceInput.value.length > 0 && nonceInput.value.length < 10) {
+    st.innerHTML = "<span class='err'>Incomplete licence serial</span>";
+    setResult(null);
+    return;
+  }
+
+  st.textContent = "";
+}
+
+async function calculate() {
+  const challenge = document.getElementById("challenge").value.trim();
+  const nonce = document.getElementById("nonce").value.trim();
+  const st = document.getElementById("status");
+
+  if (!isValidChallenge(challenge)) {
+    st.innerHTML = "<span class='err'>Enter a valid challenge code</span>";
+    setResult(null);
+    return;
+  }
+
+  if (!nonce || nonce.length < 10) {
+    st.innerHTML = "<span class='err'>Enter the Licence Serial too</span>";
+    setResult(null);
+    return;
+  }
+
+  st.innerHTML = "<span class='ok'>Calculating...</span>";
+
+  try {
+    const challengeRaw = normalise(challenge);
+    const hash = await sha256hex(challengeRaw + ":" + nonce + ":" + SECRET + ":UNLOCK");
+    const response = formatCode(hash);
+    setResult(response);
+    st.innerHTML = "<span class='ok'>Response code ready</span>";
+  } catch (e) {
+    setResult(null);
+    st.innerHTML = "<span class='err'>Calculation failed</span>";
+  }
+}
+
+async function copyResult() {
+  const codeEl = document.getElementById("result-code");
+  const btn = document.getElementById("copy-btn");
+  if (!codeEl) return;
+
+  const code = codeEl.textContent.trim();
+  if (!code) return;
+
+  function showCopied() {
+    btn.textContent = "Copied!";
+    setTimeout(() => {
+      btn.textContent = "Copy Response Code";
+    }, 1500);
+  }
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(code);
+      showCopied();
+      return;
+    }
+  } catch (e) {}
+
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = code;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "0";
+    ta.style.left = "-9999px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+
+    if (ok) {
+      showCopied();
+      return;
+    }
+  } catch (e) {}
+
+  const range = document.createRange();
+  range.selectNodeContents(codeEl);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  btn.textContent = "Press Ctrl/Cmd+C";
+  setTimeout(() => {
+    btn.textContent = "Copy Response Code";
+  }, 2000);
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    calculate();
+  }
+});
+</script>
+</body>
+</html>
