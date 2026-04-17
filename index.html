@@ -101,20 +101,30 @@
   </div>
 
   <div class="note">
-    Replace the password hash and the two page URLs before uploading this file to GitHub Pages.
+    Access lasts for 3 minutes after entering the password.<br>
     This is a basic client-side gate, not strong security.
   </div>
 </div>
 
 <script>
-// Replace these three values before publishing
 const LICENCE_URL = "https://wavsltd.github.io/SlabV5-licensing/SLab_Licence_Online%20Generator%20V5.04.html";
 const UNLOCK_URL  = "https://wavsltd.github.io/SlabV5-licensing/SLab_Remote-Unlock%20Calculator.html";
-// SHA-256 of password: changeme
 const PASSWORD_HASH = "5ec924daacc1a2f33904881ddc660fa7ca7979b671e0b39e026fb877efb70e4d";
+
+const COOKIE_NAME = "slab_auth";
+const COOKIE_VALUE = "J1ffy_ok_2026";
+const COOKIE_MAX_AGE = 180; // 3 minutes
 
 document.getElementById("licenceLink").href = LICENCE_URL;
 document.getElementById("unlockLink").href = UNLOCK_URL;
+
+function setAuthCookie() {
+  document.cookie = `${COOKIE_NAME}=${COOKIE_VALUE}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+}
+
+function hasAuthCookie() {
+  return document.cookie.split(";").some(c => c.trim() === `${COOKIE_NAME}=${COOKIE_VALUE}`);
+}
 
 async function sha256hex(str) {
   const buf = new TextEncoder().encode(str);
@@ -122,6 +132,11 @@ async function sha256hex(str) {
   return Array.from(new Uint8Array(hash))
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function showTools() {
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("tools").classList.add("open");
 }
 
 async function unlock() {
@@ -134,17 +149,15 @@ async function unlock() {
   const hash = await sha256hex(pw);
   if (hash.toLowerCase() === PASSWORD_HASH.toLowerCase()) {
     status.textContent = "";
-    document.getElementById("gate").style.display = "none";
-    document.getElementById("tools").classList.add("open");
-    sessionStorage.setItem("slab_tools_unlocked", "1");
+    setAuthCookie();
+    showTools();
   } else {
     status.textContent = "Incorrect password.";
   }
 }
 
-if (sessionStorage.getItem("slab_tools_unlocked") === "1") {
-  document.getElementById("gate").style.display = "none";
-  document.getElementById("tools").classList.add("open");
+if (hasAuthCookie()) {
+  showTools();
 }
 
 document.getElementById("pw").addEventListener("keydown", (e) => {
