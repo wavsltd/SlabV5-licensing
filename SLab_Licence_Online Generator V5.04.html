@@ -321,7 +321,7 @@ function aesEncrypt(plaintext) {
 
 // ─── Process Machine ID: decode base64, reverse chars, encrypt ────────────────
 function processMachineID(b64input) {
-  const decoded  = atob(b64input.trim());          // decode base64
+  const decoded  = atob(b64input.trim()).replace(/[\r\n]+/g, '').trim(); // decode base64, strip hidden line breaks
   const reversed = decoded.split('').reverse().join('');  // reverse chars
   return aesEncrypt(reversed);
 }
