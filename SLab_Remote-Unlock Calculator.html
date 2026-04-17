@@ -92,6 +92,18 @@
     color:#fff;
   }
 </style>
+<script>
+const COOKIE_NAME = "slab_auth";
+const COOKIE_VALUE = "J1ffy_ok_2026";
+
+function hasAuthCookie() {
+  return document.cookie.split(";").some(c => c.trim() === `${COOKIE_NAME}=${COOKIE_VALUE}`);
+}
+
+if (!hasAuthCookie()) {
+  window.location.href = "index.html";
+}
+</script>
 </head>
 <body>
 <div class="card">
