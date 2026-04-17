@@ -125,14 +125,14 @@ async function sha256hex(str) {
 }
 
 async function unlock() {
-  const pw = document.getElementById("pw").value;
+  const pw = document.getElementById("pw").value.trim();
   const status = document.getElementById("status");
   if (!pw) {
     status.textContent = "Enter the password.";
     return;
   }
   const hash = await sha256hex(pw);
-  if (hash === PASSWORD_HASH) {
+  if (hash.toLowerCase() === PASSWORD_HASH.toLowerCase()) {
     status.textContent = "";
     document.getElementById("gate").style.display = "none";
     document.getElementById("tools").classList.add("open");
