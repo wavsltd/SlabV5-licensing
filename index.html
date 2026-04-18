@@ -1,521 +1,86 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-  <meta charset="utf-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>SLab Tools</title>
-
-  <style>
-
-    :root {
-
-      --bg: #0d0d0f;
-
-      --surface: #141416;
-
-      --surface2: #1c1c1f;
-
-      --border: #2a2a2e;
-
-      --accent: #7100f4;
-
-      --text: #d8d8d8;
-
-      --muted: #666;
-
-      --danger: #e05050;
-
-    }
-
-    * {
-
-      box-sizing: border-box;
-
-      margin: 0;
-
-      padding: 0;
-
-    }
-
-    body {
-
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-
-      background: var(--bg);
-
-      color: var(--text);
-
-      min-height: 100vh;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      padding: 20px;
-
-    }
-
-    .card {
-
-      width: 100%;
-
-      max-width: 520px;
-
-      background: var(--surface);
-
-      border: 1px solid var(--border);
-
-      border-radius: 12px;
-
-      padding: 32px;
-
-    }
-
-    .title {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 4px;
-
-      font-size: 1.4em;
-
-      font-weight: 800;
-
-      color: #fff;
-
-      letter-spacing: 0.06em;
-
-      text-transform: uppercase;
-
-      margin-bottom: 6px;
-
-    }
-
-    .title-s {
-
-      display: inline-flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      width: 26px;
-
-      height: 26px;
-
-      background: var(--accent);
-
-      color: #fff;
-
-      border-radius: 6px;
-
-      line-height: 1;
-
-      flex: 0 0 auto;
-
-    }
-
-    .subtitle {
-
-      font-size: 0.78em;
-
-      color: var(--muted);
-
-      letter-spacing: 0.08em;
-
-      text-transform: uppercase;
-
-      margin-bottom: 28px;
-
-    }
-
-    label {
-
-      display: block;
-
-      font-size: 0.72em;
-
-      color: var(--muted);
-
-      letter-spacing: 0.08em;
-
-      text-transform: uppercase;
-
-      margin-bottom: 8px;
-
-    }
-
-    input[type="password"] {
-
-      width: 100%;
-
-      padding: 12px 14px;
-
-      margin-bottom: 14px;
-
-      background: var(--surface2);
-
-      border: 1px solid var(--border);
-
-      border-radius: 8px;
-
-      color: #fff;
-
-      font-family: "Menlo", "Courier New", monospace;
-
-      font-size: 1em;
-
-      outline: none;
-
-      transition: border-color 0.15s;
-
-    }
-
-    input[type="password"]:focus {
-
-      border-color: var(--accent);
-
-    }
-
-    button,
-
-    .tool-link {
-
-      width: 100%;
-
-      padding: 13px;
-
-      background: var(--accent);
-
-      color: #fff;
-
-      border: none;
-
-      border-radius: 8px;
-
-      font-size: 0.88em;
-
-      font-weight: 700;
-
-      letter-spacing: 0.1em;
-
-      text-transform: uppercase;
-
-      text-decoration: none;
-
-      cursor: pointer;
-
-      transition: background 0.15s;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      text-align: center;
-
-      line-height: 1.3;
-
-    }
-
-    button:hover,
-
-    .tool-link:hover {
-
-      background: #9030ff;
-
-    }
-
-    .status {
-
-      min-height: 20px;
-
-      margin-bottom: 12px;
-
-      font-size: 0.8em;
-
-      color: var(--danger);
-
-    }
-
-    .tools {
-
-      display: none;
-
-      margin-top: 10px;
-
-    }
-
-    .tools.open {
-
-      display: block;
-
-    }
-
-    .tools label {
-
-      text-align: center;
-
-    }
-
-    .tool-list {
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 10px;
-
-      margin-top: 12px;
-
-    }
-
-    .note {
-
-      margin-top: 20px;
-
-      padding-top: 16px;
-
-      border-top: 1px solid var(--border);
-
-      font-size: 0.72em;
-
-      color: var(--muted);
-
-      line-height: 1.5;
-
-      text-align: center;
-
-    }
-
-  </style>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLab Tools</title>
+<style>
+:root{--bg:#0d0d0f;--surface:#141416;--surface2:#1c1c1f;--border:#2a2a2e;--accent:#7100f4;--text:#d8d8d8;--muted:#666;--danger:#e05050}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px}
+.title{display:flex;align-items:center;gap:4px;font-size:1.4em;font-weight:800;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.title-s{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--accent);color:#fff;border-radius:6px;line-height:1;flex:0 0 auto}
+.subtitle{font-size:.78em;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px}
+label{display:block;font-size:.72em;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+input[type="password"]{width:100%;padding:12px 14px;margin-bottom:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:"Menlo","Courier New",monospace;font-size:1em;outline:none;transition:border-color .15s}
+input[type="password"]:focus{border-color:var(--accent)}
+button,.tool-link{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.88em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3}
+button:hover,.tool-link:hover{background:#9030ff}
+.status{min-height:20px;margin-bottom:12px;font-size:.8em;color:var(--danger)}
+.tools{display:none;margin-top:10px}
+.tools.open{display:block}
+.tools label,.note{text-align:center}
+.tool-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.note{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.72em;color:var(--muted);line-height:1.5}
+</style>
 </head>
-
 <body>
+<div class="card">
+  <div class="title"><span class="title-s">S</span><span>Lab Tools</span></div>
+  <div class="subtitle">Protected Index</div>
 
-  <div class="card">
-
-    <div class="title">
-
-      <span class="title-s">S</span>
-
-      <span>Lab Tools</span>
-
-    </div>
-
-    <div class="subtitle">Protected Index</div>
-
-    <div id="gate">
-
-      <label for="pw">Password</label>
-
-      <input
-
-        id="pw"
-
-        type="password"
-
-        autocomplete="current-password"
-
-        placeholder="Enter password"
-
-      >
-
-      <div id="status" class="status"></div>
-
-      <button type="button" id="accessButton">Access Tools</button>
-
-    </div>
-
-    <div id="tools" class="tools">
-
-      <label>Available Tools</label>
-
-      <div class="tool-list">
-
-        <a
-
-          id="licenceLink"
-
-          class="tool-link"
-
-          href="#"
-
-          target="_blank"
-
-          rel="noopener"
-
-        >
-
-          SLab Licence Generator
-
-        </a>
-
-        <a
-
-          id="unlockLink"
-
-          class="tool-link"
-
-          href="#"
-
-          target="_blank"
-
-          rel="noopener"
-
-        >
-
-          SLab Remote Unlock Calculator
-
-        </a>
-
-      </div>
-
-    </div>
-
-    <div class="note">
-
-      Access lasts for 2 minutes after entering the password.
-
-    </div>
-
+  <div id="gate">
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Enter password">
+    <div id="status" class="status"></div>
+    <button type="button" id="accessButton">Access Tools</button>
   </div>
 
-  <script>
+  <div id="tools" class="tools">
+    <label>Available Tools</label>
+    <div class="tool-list">
+      <a id="licenceLink" class="tool-link" href="#" target="_blank" rel="noopener">SLab Licence Generator</a>
+      <a id="unlockLink" class="tool-link" href="#" target="_blank" rel="noopener">SLab Remote Unlock Calculator</a>
+    </div>
+  </div>
 
-    const LICENCE_URL = "https://wavsltd.github.io/SlabV5-licensing/SLab_Licence_Online%20Generator%20V5.04.html";
+  <div class="note">Access lasts for 2 minutes after entering the password.</div>
+</div>
 
-    const UNLOCK_URL = "https://wavsltd.github.io/SlabV5-licensing/SLab_Remote-Unlock%20Calculator.html";
+<script>
+const LICENCE_URL="https://wavsltd.github.io/SlabV5-licensing/SLab_Licence_Online%20Generator%20V5.04.html",
+      UNLOCK_URL="https://wavsltd.github.io/SlabV5-licensing/SLab_Remote-Unlock%20Calculator.html",
+      PASSWORD_HASH="5ec924daacc1a2f33904881ddc660fa7ca7979b671e0b39e026fb877efb70e4d",
+      COOKIE_NAME="slab_auth",
+      COOKIE_VALUE="J1ffy_ok_2026",
+      COOKIE_MAX_AGE=120,
+      pwInput=document.getElementById("pw"),
+      statusEl=document.getElementById("status"),
+      gateEl=document.getElementById("gate"),
+      toolsEl=document.getElementById("tools"),
+      accessButton=document.getElementById("accessButton"),
+      licenceLink=document.getElementById("licenceLink"),
+      unlockLink=document.getElementById("unlockLink");
 
-    const PASSWORD_HASH = "5ec924daacc1a2f33904881ddc660fa7ca7979b671e0b39e026fb877efb70e4d";
+licenceLink.href=LICENCE_URL;
+unlockLink.href=UNLOCK_URL;
 
-    const COOKIE_NAME = "slab_auth";
+function setAuthCookie(){document.cookie=`${COOKIE_NAME}=${COOKIE_VALUE}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`}
+function hasAuthCookie(){return document.cookie.split(";").map(c=>c.trim()).includes(`${COOKIE_NAME}=${COOKIE_VALUE}`)}
+async function sha256hex(value){const data=new TextEncoder().encode(value),hashBuffer=await crypto.subtle.digest("SHA-256",data);return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,"0")).join("")}
+function showTools(){gateEl.style.display="none";toolsEl.classList.add("open")}
+async function unlock(){
+  const password=pwInput.value.trim();
+  if(!password){statusEl.textContent="Enter the password.";return}
+  const hash=await sha256hex(password);
+  if(hash.toLowerCase()===PASSWORD_HASH.toLowerCase()){statusEl.textContent="";setAuthCookie();showTools();return}
+  statusEl.textContent="Incorrect password.";
+}
 
-    const COOKIE_VALUE = "J1ffy_ok_2026";
-
-    const COOKIE_MAX_AGE = 120; // 2 minutes
-
-    const pwInput = document.getElementById("pw");
-
-    const statusEl = document.getElementById("status");
-
-    const gateEl = document.getElementById("gate");
-
-    const toolsEl = document.getElementById("tools");
-
-    const accessButton = document.getElementById("accessButton");
-
-    const licenceLink = document.getElementById("licenceLink");
-
-    const unlockLink = document.getElementById("unlockLink");
-
-    licenceLink.href = LICENCE_URL;
-
-    unlockLink.href = UNLOCK_URL;
-
-    function setAuthCookie() {
-
-      document.cookie = `${COOKIE_NAME}=${COOKIE_VALUE}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
-
-    }
-
-    function hasAuthCookie() {
-
-      return document.cookie
-
-        .split(";")
-
-        .map(cookie => cookie.trim())
-
-        .includes(`${COOKIE_NAME}=${COOKIE_VALUE}`);
-
-    }
-
-    async function sha256hex(value) {
-
-      const data = new TextEncoder().encode(value);
-
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-      return hashArray
-
-        .map(byte => byte.toString(16).padStart(2, "0"))
-
-        .join("");
-
-    }
-
-    function showTools() {
-
-      gateEl.style.display = "none";
-
-      toolsEl.classList.add("open");
-
-    }
-
-    async function unlock() {
-
-      const password = pwInput.value.trim();
-
-      if (!password) {
-
-        statusEl.textContent = "Enter the password.";
-
-        return;
-
-      }
-
-      const hash = await sha256hex(password);
-
-      if (hash.toLowerCase() === PASSWORD_HASH.toLowerCase()) {
-
-        statusEl.textContent = "";
-
-        setAuthCookie();
-
-        showTools();
-
-        return;
-
-      }
-
-      statusEl.textContent = "Incorrect password.";
-
-    }
-
-    if (hasAuthCookie()) {
-
-      showTools();
-
-    }
-
-    accessButton.addEventListener("click", unlock);
-
-    pwInput.addEventListener("keydown", (event) => {
-
-      if (event.key === "Enter") {
-
-        unlock();
-
-      }
-
-    });
-
-  </script>
-
+if(hasAuthCookie()) showTools();
+accessButton.addEventListener("click",unlock);
+pwInput.addEventListener("keydown",e=>{if(e.key==="Enter") unlock()});
+</script>
 </body>
-
 </html>
